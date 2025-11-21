@@ -1,6 +1,6 @@
 # SUPER RESOLUTION FOR MEDICAL CT SCANS
 
-**from blurred, low-res slices to high-quality medical images**
+**from blurred, low-resolution slices to high-quality medical images**
 
 ## **Table of Contents**
 1. [Overview](#overview)
@@ -16,14 +16,14 @@
 6. [Project Structure](#project-structure)  
 
 ## **Overview**
-This project investigates the feasibility of training a light convolutional neural network (CNN) to perform medical image super-resolution. The goal is not to provide a finished or production-ready method, but rather to build a clear and minimal proof of concept demonstrating that high-resolution (HR) medical images can be effectively reconstructed from artificially degraded inputs.
+This project investigates the feasibility of training a light convolutional neural network (CNN) to perform medical image super-resolution. The goal is not to provide a finished or production-ready method, but rather to build a clear and minimal proof of concept demonstrating that high-resolution (HR) medical images can be effectively reconstructed from degraded inputs.
 
-Despite its simplicity, the experiment produced strong qualitative results, showing that even a compact architecture can recover diagnostically meaningful details from low-resolution data.
+Despite its simplicity, the experiment produced strong qualitative results, showing that even a compact architecture can recover diagnostically meaningful details from low-resolution data.<br>
 A crucial aspect in medical applications is that the resulting image must not simply look “good” in a visual or aesthetic sense: it must be reliable, free of misleading artifacts, and truly readable by clinicians. Diagnostic accuracy depends on image fidelity, not on perceptual sharpness alone, and this project is designed with that principle in mind.
 
 
 ### **Motivation and Scenario**
-This setup mimics real clinical scenarios in which scanners may output low-resolution (LR) images.
+This setup mimics real clinical scenarios in which scanners may output low-resolution (LR) images.<br>
 By artificially degrading LR images to very-low-resolution (VLR) images, training a network to recover LR, and then reusing the same model to upscale LR to high-resolution (HR) images, it becomes possible to enhance medical images without requiring HR ground truth during deployment.
 
 Lower-resolution imaging hardware can be highly advantageous in real-world healthcare settings. Scanners that operate at reduced resolution typically expose patients to less radiation, lowering clinical risk (an especially important factor in repeated imaging procedures). Additionally, low-res hardware is significantly cheaper, more compact, and easier to maintain.
@@ -40,13 +40,15 @@ The training pipeline is designed to mimic a scenario where only low-resolution 
 3. **Further degrade the LR image** by again downscaling by 2 and applying Gaussian blur, producing a very-low-resolution (VLR) slice (128×128).
 4. **Train a lightweight five-layer convolutional neural network** (with ReLU activations) to estimate the residual between VLR and LR, effectively learning the mapping **VLR → LR**.
 
+This procedure was intentionally kept minimal, as the project serves as a proof of concept rather than a fully developed super-resolution pipeline. For this reason, the training was performed using a *single* slice. From that slice, the dataset dynamically generates **10,000 random 64×64 patches per epoch**, ensuring that the model is exposed to a wide variety of local anatomical patterns despite the limited amount of raw data.
+
 During training, the network never sees the HR images.  
 It only learns how to reconstruct LR from VLR, and this learned behavior is later reused to upscale LR to HR during inference.
 
 
 ### **Inference**
 At inference time, the trained model is applied directly to the low-resolution (LR) image (256×256) to generate high-resolution (HR) prediction (512×512).  
-Even though the network was trained exclusively on the **128×128 → 256×256** mapping, it generalizes to the **256×256 → 512×512** upscale.  
+Even though the network was trained exclusively on the **128×128 → 256×256** mapping, it generalizes to the **256×256 → 512×512** upscaling.  
 The model reconstructs high-resolution outputs by reusing the residual patterns learned during training, effectively "hallucinating" plausible details while preserving the underlying medical structures.
 
 
