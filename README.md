@@ -4,8 +4,8 @@
 
 ## **Table of Contents**
 1. [Overview](#overview)
-   - [Motivation and Scenario](#motivationandscenario)
-   - [Training Strategy](#trainingstrategy)
+   - [Motivation and Scenario](#motivation-and-scenario)
+   - [Training Strategy](#training-strategy)
    - [Inference](#inference)
    - [Results](#results) 
 3. [Getting Started](#getting-started)  
